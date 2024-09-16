@@ -1,5 +1,6 @@
 html {
   font-size: 14px;
+
 }
 
 @media (min-width: 768px) {
@@ -19,4 +20,33 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+form{
+    margin : 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover{
+   background-color: #45a049;
+}
+
+#progress-container{
+    width: 100%;
+    background-color: #f3f3f3;
+    margin-top: 20px;
+}
+
+#progress-bar {
+    height: 30px;
+    width: 0;
+    background-color: #4CAF50;
+    transition: width 0.4s ease;
 }
