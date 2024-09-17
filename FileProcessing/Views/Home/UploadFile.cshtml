@@ -1,28 +1,66 @@
-﻿<head>
-    <link rel="stylesheet" href="~/css/site.css" />
-</head>
+﻿@{
+    ViewData["Title"] = "Accueil";
+}
 
-
-<form id="fileForm" method="post" enctype="multipart/form-data">
+<form id="uploadForm" method="post" enctype="multipart/form-data">
     <input type="file" name="file" id="fileInput"/>
-    <button type="submit" asp-controller="Home" asp-action="UploadFile">Upload</button>
+    <button type="submit" >Upload</button>
 </form>
 
 <div id="errorMessage" style="color:red; display: none;"></div>
 
-<div id="progress-container" style="width: 100%; background-color: #f3f3f3;">
-    <div id="progress-bar" style="width: 0%; height: 30px; background-color: #4CAF50;"></div>
+<div>
+    <progress id="progressBar" value="0" max="100"></progress>
+    <span id="progressText">0%</span>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
 <script type="text/javascript">
-    const connection = new signalR.HubConnectionBuilder().withUrl("/fileProcessingHub").buid();
 
-    connection.on("ReceiveProgress", function (progress) {
-        document.getElementById("progress-bar").style.width = progress + "%";
+
+    document.getElementById("uploadForm").addEventListener("submit", function (event) {
+        event.preventDefault(); // Empecher le rechargement de la page
+        var fileInput = document.getElementById("fileInput");
+        var formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+
+        // Envoie le fichier via fetch
+        fetch('/Home/UploadFile', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === false) {
+                    // Rediriger vers la page d'erreur si aucun fichier n'est sélectionné
+                    window.location.href = "/Home/ErrorNoFile";
+                }
+            })
+            .catch(error =>{
+                console.error('Erreur', error);
+            });
     });
 
-    connection.start().catch(function (err){
+</script>
+
+<script type ="text/javascript">
+
+
+    var connection = new signalR.HubConnectionBuilder().withUrl("/fileProcessingHub").build();
+
+    connection.on("ReceiveProgress", function (progress) {
+        document.getElementById("progressBar").value = progress;
+        document.getElementById("progressText").innerText = progress + "%"
+
+        // Si la progression atteint 100%, rediriger vers la page succès
+        if (progress === 100) {
+            window.location.href = "/Home/Success";
+        }
+
+    });
+
+    connection.start().catch(function (err) {
         return console.error(err.toString());
     });
 

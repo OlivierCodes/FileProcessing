@@ -16,6 +16,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.MapHub<FileProcessingHub>("/fileProcessingHub");
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -27,6 +29,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=UploadFile}/{id?}");
 
-app.MapHub<FileProcessingHub>("/fileProcessingHub");
+
 
 app.Run();
